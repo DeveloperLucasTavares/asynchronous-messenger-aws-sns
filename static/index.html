@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Mensageria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.12.3/dist/cdn.min.js"></script>
+</head>
+
+<body>
+    <div x-data="dados()" class="w-1/2 mx-auto py-10">
+        <div>
+            <h1 class="font-bold py-20 text-4xl">Envie sua mensagem para os microsserviços!</h1>
+            <button x-on:click="enviarMensagem"
+                class="border bg-gray-50 hover:bg-gray-100 w-full py-3 font-semibold rounded">
+                Enviar Mensagem
+            </button>
+        </div>
+        <div class="py-10">
+            <h1 class="font-semibol">
+                Microsserviços
+            </h1>
+            <template x-for="inscrito in inscritos">
+
+                <div class="flex flex-col mt-2 space-y-2 border p-5 font-semibold text-sm rounded">
+                    <div x-text="inscrito.url" class="text-sm">
+                        URL
+                    </div>
+                    <div class="font-normal text-gray-600">
+                        <span x-text="inscrito.itensProcessados"></span>
+                        Mensagens processadas
+                    </div>
+                </div>
+
+            </template>
+        </div>
+    </div>
+</body>
+
+<script>
+    const enviarMensagem = async () => {
+        await fetch("/enviar_mensagem", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => response.json())
+            .then((response) => {
+                console.log(response)
+            })
+    }
+
+    async function init() {
+        let response = await fetch("/sistemas_inscritos")
+        response = await response.json()
+
+        console.log(response)
+        this.inscritos = response
+    }
+
+    function dados() {
+        return {
+            enviarMensagem,
+            init,
+            inscritos: []
+        }
+    }
+</script>
+
+</html>
